@@ -30,7 +30,8 @@ fn avent_blink(list: &Vec<usize>, blinks: i32)->usize {
         }
         source = result.clone();
     }
-    return source.values().sum::<usize>();
+    
+    source.values().sum::<usize>()
 }
 
 

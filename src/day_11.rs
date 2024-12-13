@@ -14,11 +14,10 @@ fn avent_blink(list: &Vec<usize>, blinks: i32)->usize {
         for (stone, count) in source {
             let len = log10(stone as f64).floor() as i32+1;
             if len % 2 == 0 {
-                //even length
+                //even length, divide to two stones
                 let divider = 10_usize.pow((len/2) as u32);
                 let first = stone / divider;
                 result.insert(first, result.get(&first).unwrap_or(&0)+count);
-    
                 let second = stone % divider;
                 result.insert(second, result.get(&second).unwrap_or(&0)+count);
             } else if stone == 0 {
@@ -41,8 +40,10 @@ fn main() {
     let blinks: i32 = 25;
     let count = avent_blink(&list, blinks);
     println!("Number of stones after {:?} blinks is {:?}!", blinks, count);
+    assert_eq!(count, 193269);
 
     let blinks: i32 = 75;
     let count = avent_blink(&list, blinks);
     println!("Number of stones after {:?} blinks is {:?}!", blinks, count);
+    assert_eq!(count, 228449040027793);
 }

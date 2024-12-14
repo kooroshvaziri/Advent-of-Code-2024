@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-#[derive(Debug)]
 struct Farm {
     zone: usize,
     //fences
@@ -39,7 +38,6 @@ fn calculate_regions(map: &Vec<Vec<char>>, elves_help: bool)->usize {
         farms.push(row_farm);
     }
     
-
     let mut regions = 0;
     for i in 0..map_rows {
         let row_len = map[i].len();
@@ -112,7 +110,6 @@ fn calculate_regions(map: &Vec<Vec<char>>, elves_help: bool)->usize {
             distinct.insert(cur_zone, (cur_count+1, cur_side+sides));            
         }
     }
-    
     distinct.iter().map(|(_, (c,v))| c * v).collect::<Vec<usize>>().iter().sum::<usize>()
 }
 

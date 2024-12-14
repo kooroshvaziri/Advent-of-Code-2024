@@ -88,19 +88,16 @@ fn calculate_regions(map: &Vec<Vec<char>>, elves_help: bool)->usize {
             farms[i][j].south = i==map_rows-1 || farms[i+1][j].color != cur_reg;
             
             if elves_help {
-                if farms[i][j].west && i>0 && farms[i-1][j].color == cur_reg && farms[i-1][j].west {
-                    farms[i-1][j].west = false;
+                if i>0 {
+                    farms[i-1][j].west = farms[i-1][j].west && (!farms[i][j].west || farms[i-1][j].color != cur_reg); 
+                    farms[i-1][j].east = farms[i-1][j].east && (!farms[i][j].east || farms[i-1][j].color != cur_reg);
                 }
-                if farms[i][j].north && j>0 && farms[i][j-1].color == cur_reg && farms[i][j-1].north {
-                    farms[i][j-1].north = false;
+                if j>0 {
+                    farms[i][j-1].north = farms[i][j-1].north && (!farms[i][j].north || farms[i][j-1].color != cur_reg);
+                    farms[i][j-1].south = farms[i][j-1].south && (!farms[i][j].south || farms[i][j-1].color != cur_reg);
                 }
-                if farms[i][j].east && i>0 && farms[i-1][j].color == cur_reg && farms[i-1][j].east {
-                    farms[i-1][j].east = false;
-                }
-                if farms[i][j].south && j>0 && farms[i][j-1].color == cur_reg && farms[i][j-1].south {
-                    farms[i][j-1].south = false;
-                }
-            }         
+            }
+            
         }
     }
     
@@ -115,6 +112,7 @@ fn calculate_regions(map: &Vec<Vec<char>>, elves_help: bool)->usize {
             distinct.insert(cur_reg, (cur_count+1, cur_side+sides));            
         }
     }
+    
     distinct.iter().map(|(_, (c,v))| c * v).collect::<Vec<usize>>().iter().sum::<usize>()
 }
 

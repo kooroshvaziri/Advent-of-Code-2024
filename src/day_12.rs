@@ -78,7 +78,6 @@ fn calculate_regions(map: &Vec<Vec<char>>, elves_help: bool)->usize {
         
     }
 
-    let mut distinct: HashMap::<usize, (usize, usize)> = HashMap::new();
     for i in 0..map_rows {
         let row_len = farms[i].len();
         for j in 0..row_len {
@@ -105,6 +104,7 @@ fn calculate_regions(map: &Vec<Vec<char>>, elves_help: bool)->usize {
         }
     }
     
+    let mut distinct: HashMap::<usize, (usize, usize)> = HashMap::new();
     for i in 0..map_rows {
         let row_len = farms[i].len();
         for j in 0..row_len {
@@ -115,7 +115,6 @@ fn calculate_regions(map: &Vec<Vec<char>>, elves_help: bool)->usize {
             distinct.insert(cur_reg, (cur_count+1, cur_side+sides));            
         }
     }
-    
     distinct.iter().map(|(_, (c,v))| c * v).collect::<Vec<usize>>().iter().sum::<usize>()
 }
 

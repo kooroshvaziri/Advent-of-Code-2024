@@ -2,18 +2,19 @@ use std::collections::HashMap;
 
 #[derive(Debug)]
 struct Farm {
-    color: usize,
+    zone: usize,
+    //fences
     west: bool,
     north: bool,
     east: bool,
     south: bool,
 }
 
-fn repaint_map(farms: &mut Vec<Vec<Farm>>, find: usize, replace: usize){
+fn rezone_map(farms: &mut Vec<Vec<Farm>>, find: usize, replace: usize){
     for i in 0..farms.len() {
         for j in 0..farms[i].len() {
-            if farms[i][j].color == find {
-                farms[i][j].color = replace;
+            if farms[i][j].zone == find {
+                farms[i][j].zone = replace;
             }
         }
     }
@@ -23,12 +24,11 @@ fn calculate_regions(map: &Vec<Vec<char>>, elves_help: bool)->usize {
     let map_rows = map.len();
     
     let mut farms: Vec<Vec<Farm>> = Vec::new();
-    
     for i in 0..map_rows {
         let mut row_farm: Vec<Farm> = Vec::new();
         for _ in 0..map[i].len() {
             let farm = Farm {
-                color: 0,
+                zone: 0,
                 west: false,
                 north: false,
                 east: false,
@@ -46,34 +46,34 @@ fn calculate_regions(map: &Vec<Vec<char>>, elves_help: bool)->usize {
 
         for j in 0..row_len {
             let cur_reg = map[i][j];
-            let mut cur_col = farms[i][j].color;
+            let mut cur_zone = farms[i][j].zone;
 
             //check west
             if j>0 && map[i][j-1] == cur_reg {
-                if cur_col == 0 {
-                    cur_col = farms[i][j-1].color;
-                } else if cur_col != farms[i][j-1].color {
-                    //same region different color:
-                    let rep_col = farms[i][j-1].color;
-                    repaint_map(&mut farms, rep_col, cur_col);
+                if cur_zone == 0 {
+                    cur_zone = farms[i][j-1].zone;
+                } else if cur_zone != farms[i][j-1].zone {
+                    //same region different zone:
+                    let rep_col = farms[i][j-1].zone;
+                    rezone_map(&mut farms, rep_col, cur_zone);
                 }
             }
             //check north
             if i>0 && map[i-1][j] == cur_reg {
-                if cur_col == 0 {
-                    cur_col = farms[i-1][j].color;
-                } else if cur_col != farms[i-1][j].color {
-                    //same region different color:
-                    let rep_col = farms[i-1][j].color;
-                    repaint_map(&mut farms, rep_col, cur_col);
+                if cur_zone == 0 {
+                    cur_zone = farms[i-1][j].zone;
+                } else if cur_zone != farms[i-1][j].zone {
+                    //same region different zone:
+                    let rep_col = farms[i-1][j].zone;
+                    rezone_map(&mut farms, rep_col, cur_zone);
                 }
             }
 
-            if cur_col == 0 {
+            if cur_zone == 0 {
                 regions+=1;
-                cur_col = regions;
+                cur_zone = regions;
             }
-            farms[i][j].color = cur_col;
+            farms[i][j].zone = cur_zone;
         }
         
     }
@@ -81,20 +81,20 @@ fn calculate_regions(map: &Vec<Vec<char>>, elves_help: bool)->usize {
     for i in 0..map_rows {
         let row_len = farms[i].len();
         for j in 0..row_len {
-            let cur_reg = farms[i][j].color;
-            farms[i][j].west = j==0 || farms[i][j-1].color != cur_reg;
-            farms[i][j].north = i==0 || farms[i-1][j].color != cur_reg;
-            farms[i][j].east = j==row_len-1 || farms[i][j+1].color != cur_reg;
-            farms[i][j].south = i==map_rows-1 || farms[i+1][j].color != cur_reg;
+            let cur_zone = farms[i][j].zone;
+            farms[i][j].west = j==0 || farms[i][j-1].zone != cur_zone;
+            farms[i][j].north = i==0 || farms[i-1][j].zone != cur_zone;
+            farms[i][j].east = j==row_len-1 || farms[i][j+1].zone != cur_zone;
+            farms[i][j].south = i==map_rows-1 || farms[i+1][j].zone != cur_zone;
             
             if elves_help {
                 if i>0 {
-                    farms[i-1][j].west = farms[i-1][j].west && (!farms[i][j].west || farms[i-1][j].color != cur_reg); 
-                    farms[i-1][j].east = farms[i-1][j].east && (!farms[i][j].east || farms[i-1][j].color != cur_reg);
+                    farms[i-1][j].west = farms[i-1][j].west && (!farms[i][j].west || farms[i-1][j].zone != cur_zone); 
+                    farms[i-1][j].east = farms[i-1][j].east && (!farms[i][j].east || farms[i-1][j].zone != cur_zone);
                 }
                 if j>0 {
-                    farms[i][j-1].north = farms[i][j-1].north && (!farms[i][j].north || farms[i][j-1].color != cur_reg);
-                    farms[i][j-1].south = farms[i][j-1].south && (!farms[i][j].south || farms[i][j-1].color != cur_reg);
+                    farms[i][j-1].north = farms[i][j-1].north && (!farms[i][j].north || farms[i][j-1].zone != cur_zone);
+                    farms[i][j-1].south = farms[i][j-1].south && (!farms[i][j].south || farms[i][j-1].zone != cur_zone);
                 }
             }
             
@@ -105,11 +105,11 @@ fn calculate_regions(map: &Vec<Vec<char>>, elves_help: bool)->usize {
     for i in 0..map_rows {
         let row_len = farms[i].len();
         for j in 0..row_len {
-            let cur_reg = farms[i][j].color;
+            let cur_zone = farms[i][j].zone;
             let sides = (farms[i][j].west as usize) + (farms[i][j].north as usize) +
                     (farms[i][j].east as usize) + (farms[i][j].south as usize);
-            let (cur_count, cur_side) = distinct.get(&cur_reg).unwrap_or(&(0, 0));
-            distinct.insert(cur_reg, (cur_count+1, cur_side+sides));            
+            let (cur_count, cur_side) = distinct.get(&cur_zone).unwrap_or(&(0, 0));
+            distinct.insert(cur_zone, (cur_count+1, cur_side+sides));            
         }
     }
     

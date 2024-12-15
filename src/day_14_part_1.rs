@@ -11,31 +11,17 @@ struct Robot {
 }
 
 fn simulate_floor(init_robots: &Vec<Robot>, space: &Point, seconds: i32)->usize {
-    //println!("{:?}", robots );
-    
     let mut robots: Vec<Robot> = init_robots.clone();
     
-    for i in 0..robots.len() {
-        robots[i].position.x += seconds * robots[i].speed.x;
-        while robots[i].position.x >= space.x {
-            robots[i].position.x -= space.x;
-        }
-        while robots[i].position.x < 0 {
-            robots[i].position.x += space.x;
-        }
-        robots[i].position.y += seconds * robots[i].speed.y;
-        while robots[i].position.y >= space.y {
-            robots[i].position.y -= space.y;
-        }
-        while robots[i].position.y < 0 {
-            robots[i].position.y += space.y;
-        }
+    for r in &mut robots {
+        r.position.x = (r.position.x + seconds * r.speed.x).rem_euclid(space.x);
+        r.position.y = (r.position.y + seconds * r.speed.y).rem_euclid(space.y);
     }
 
     //render position map
     let mut map: Vec<Vec<usize>> = vec![vec![0; space.x as usize]; space.y as usize];
-    for i in 0..robots.len() {
-        map[robots[i].position.y as usize][robots[i].position.x as usize]+=1;
+    for r in robots {
+        map[r.position.y as usize][r.position.x as usize]+=1;
     }
 
     let div_x: usize = ((space.x-1) / 2).try_into().unwrap_or(0);
@@ -83,6 +69,7 @@ fn convert_input_to_robots(source: &str)->Vec<Robot> {
                     },
                 }).collect::<Vec<Robot>>()
 }
+
 
 fn main() {
     let source = 

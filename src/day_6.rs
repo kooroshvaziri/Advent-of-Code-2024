@@ -50,11 +50,10 @@ fn calculate_moves(map_src: &Vec<Vec<char>>, guard_initial: &Guard)->usize {
         if guard.dir == Direction::Up && guard.pos.y > 0 {
             if map[guard.pos.y-1][guard.pos.x]=='#' {
                 guard.dir = Direction::Right;
-                if after_hit[guard.pos.y][guard.pos.x]==Direction::Unknown {
-                   after_hit[guard.pos.y][guard.pos.x]=guard.dir.clone(); 
-                } else if before_hit[guard.pos.y][guard.pos.x]==Direction::Up &&
-                            after_hit[guard.pos.y][guard.pos.x]==guard.dir {
+                if before_hit[guard.pos.y][guard.pos.x]==Direction::Up && after_hit[guard.pos.y][guard.pos.x]==guard.dir {
                     return 0;
+                } else if after_hit[guard.pos.y][guard.pos.x]==Direction::Unknown {
+                   after_hit[guard.pos.y][guard.pos.x]=guard.dir.clone(); 
                 }
             } else {
                 guard.pos.y-=1;
@@ -62,11 +61,10 @@ fn calculate_moves(map_src: &Vec<Vec<char>>, guard_initial: &Guard)->usize {
         } else if guard.dir == Direction::Down && guard.pos.y < map.len()-1 {
             if map[guard.pos.y+1][guard.pos.x]=='#' {
                 guard.dir = Direction::Left;
-                if after_hit[guard.pos.y][guard.pos.x]==Direction::Unknown {
-                   after_hit[guard.pos.y][guard.pos.x]=guard.dir.clone(); 
-                } else if before_hit[guard.pos.y][guard.pos.x]==Direction::Down &&
-                            after_hit[guard.pos.y][guard.pos.x]==guard.dir {
+                if before_hit[guard.pos.y][guard.pos.x]==Direction::Down && after_hit[guard.pos.y][guard.pos.x]==guard.dir {
                     return 0;
+                } else if after_hit[guard.pos.y][guard.pos.x]==Direction::Unknown {
+                   after_hit[guard.pos.y][guard.pos.x]=guard.dir.clone(); 
                 }
             } else {
                 guard.pos.y+=1;
@@ -74,11 +72,10 @@ fn calculate_moves(map_src: &Vec<Vec<char>>, guard_initial: &Guard)->usize {
         } else if guard.dir == Direction::Right && guard.pos.x < map[guard.pos.y].len()-1 {
             if map[guard.pos.y][guard.pos.x+1]=='#' {
                 guard.dir = Direction::Down;
-                if after_hit[guard.pos.y][guard.pos.x]==Direction::Unknown {
-                   after_hit[guard.pos.y][guard.pos.x]=guard.dir.clone(); 
-                } else if before_hit[guard.pos.y][guard.pos.x]==Direction::Right &&
-                            after_hit[guard.pos.y][guard.pos.x]==guard.dir {
+                if before_hit[guard.pos.y][guard.pos.x]==Direction::Right && after_hit[guard.pos.y][guard.pos.x]==guard.dir {
                     return 0;
+                } else if after_hit[guard.pos.y][guard.pos.x]==Direction::Unknown {
+                    after_hit[guard.pos.y][guard.pos.x]=guard.dir.clone(); 
                 }
             } else {
                 guard.pos.x+=1;
@@ -86,12 +83,11 @@ fn calculate_moves(map_src: &Vec<Vec<char>>, guard_initial: &Guard)->usize {
         } else if guard.dir == Direction::Left && guard.pos.x > 0 {
             if map[guard.pos.y][guard.pos.x-1]=='#' {
                 guard.dir = Direction::Up;
-                if after_hit[guard.pos.y][guard.pos.x]==Direction::Unknown {
-                   after_hit[guard.pos.y][guard.pos.x]=guard.dir.clone(); 
-                } else if before_hit[guard.pos.y][guard.pos.x]==Direction::Left &&
-                            after_hit[guard.pos.y][guard.pos.x]==guard.dir {
+                if before_hit[guard.pos.y][guard.pos.x]==Direction::Left && after_hit[guard.pos.y][guard.pos.x]==guard.dir {
                     return 0;
-                }
+                } else if after_hit[guard.pos.y][guard.pos.x]==Direction::Unknown {
+                   after_hit[guard.pos.y][guard.pos.x]=guard.dir.clone(); 
+                } 
             } else {
                 guard.pos.x-=1;
             }

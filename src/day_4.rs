@@ -1,5 +1,3 @@
-
-
 fn calculate_occurances(map: &Vec<Vec<char>>)->usize {
     let mut count = 0;
     let find_vec = ['X','M','A','S'];

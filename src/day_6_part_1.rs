@@ -252,7 +252,7 @@ fn main() {
     
     let map = parse_map(&source);
     if let Some(guard) = parse_guard(&map) {
-        assert_eq!(41, calculate_moves(&map, &guard));        
+        assert_eq!(5067, calculate_moves(&map, &guard));        
     } else {
         println!("Error: cannot find guard in the map.");
     } 

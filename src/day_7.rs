@@ -10,9 +10,7 @@ enum Operator {
 fn calculate_result(numbers: &Vec<Vec<usize>>, base: &usize)->usize {
     let mut total_sum = 0;
     for sequence in numbers {
-        let expected_value = sequence[0];
-        
-        //conitnue other operations..
+        let expected_value = sequence[0];        
         let total_operators = sequence.len()-2;
         let combinations = base.pow(total_operators as u32) as usize;
         

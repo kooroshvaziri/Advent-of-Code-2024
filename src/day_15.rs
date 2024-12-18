@@ -8,7 +8,7 @@ fn calculate_gps(init_map: &Vec<Vec<char>>, moves: &str)->usize {
                                         '^' => (0, -1),
                                         'v'  => (0, 1),
                                         _ => (0,0)
-                                    }).collect::<Vec<(i32, i32)>>();
+                                    }).filter(|&(a,b)| a!=0 || b!=0).collect::<Vec<(i32, i32)>>();
     steps.reverse();
     
     let mut pos:(i32, i32) = (0, 0); 
@@ -23,15 +23,16 @@ fn calculate_gps(init_map: &Vec<Vec<char>>, moves: &str)->usize {
     };
     
     while let Some(step) = steps.pop() {
-        execute_move(step, &mut pos, &mut map);
-        //print_map(&map);
+        execute_move(&step, &pos.clone(), &mut pos, &mut map);
     }
+    
+    //_print_map(&map);
     
     let mut gps_total = 0;
     
     for j in 0..map.len(){
-        for i in 0..map[j].len() {
-            if map[j][i]=='O' {
+        for i in 0..map[j].len()-1 {
+            if map[j][i]=='[' || map[j][i]=='O'  {
                 gps_total += j*100+i;
             }
         }
@@ -50,33 +51,81 @@ fn _print_map(map: &Vec<Vec<char>>) {
     }
 }
 
-fn execute_move(dir: (i32, i32), pos: &mut (i32, i32), map: &mut Vec<Vec<char>>)->bool {
-    let mut des = (pos.0+dir.0, pos.1+dir.1);
-    if des.0>=0 && (des.0 as usize)<map[0].len() && des.1>=0 && (des.1 as usize)<map.len() {
-        if map[des.1 as usize][des.0 as usize] == 'O' {
-            execute_move(dir, &mut des, map);
+fn can_move(dir: &(i32, i32), pos: &(i32, i32), map: &Vec<Vec<char>>)->bool {
+   // println!("Can Move {:?} {:?} {:?}", dir, pos, map[pos.1 as usize][pos.0 as usize]);
+    if pos.0>=0 && (pos.0 as usize)<map[0].len() && pos.1>=0 && (pos.1 as usize)<map.len() {
+        let tile = map[pos.1 as usize][pos.0 as usize];
+        if tile=='#' {
+            return false;
         }
-        
-        if map[des.1 as usize][des.0 as usize]=='.' {
-            map[des.1 as usize][des.0 as usize]=map[pos.1 as usize][pos.0 as usize];
-            map[pos.1 as usize][pos.0 as usize]='.';
-            
-            if map[des.1 as usize][des.0 as usize]=='@' {
-                pos.0 = des.0;
-                pos.1 = des.1;
+        if tile=='.' {
+            return true;
+        }
+        if can_move(dir, &(pos.0+dir.0, pos.1+dir.1), map) {
+            if dir.1!=0 && tile=='[' {
+                return can_move(dir, &(pos.0+1, pos.1+dir.1), map);
+            } else if dir.1!=0 &&  tile==']' {
+                return can_move(dir, &(pos.0-1, pos.1+dir.1), map);
             }
             return true;
         }
     }
-        
     false
 }
 
+fn shift_boxes(dir: &(i32, i32), pos: &(i32, i32), map: &mut Vec<Vec<char>>) {
+    let cell = (pos.0+dir.0, pos.1+dir.1);
+
+    if map[cell.1 as usize][cell.0 as usize]!='.' {
+        shift_boxes(dir, &cell, map);
+        if dir.1!=0 {
+            if map[(cell.1+dir.1) as usize][cell.0 as usize]=='[' {
+                shift_boxes(dir, &(cell.0+1, cell.1), map);
+            } else if  map[(cell.1+dir.1) as usize][cell.0 as usize]==']' {
+                shift_boxes(dir, &(cell.0-1, cell.1), map);
+            }
+        }   
+    }
+    
+    if map[cell.1 as usize][cell.0 as usize]=='.' {
+        let shift = map[cell.1 as usize][cell.0 as usize];
+        map[cell.1 as usize][cell.0 as usize]=map[pos.1 as usize][pos.0 as usize];
+        map[pos.1 as usize][pos.0 as usize]=shift;
+    }
+}
+
+fn execute_move(dir: &(i32, i32), pos: &(i32, i32), robot: &mut (i32, i32), map: &mut Vec<Vec<char>>)->bool {
+    let cell = (pos.0+dir.0, pos.1+dir.1);
+    if can_move(dir, &cell, map) {
+        shift_boxes(dir, &pos, map);
+        robot.0 = robot.0+dir.0;
+        robot.1 = robot.1+dir.1;
+    }
+    
+    false
+}
 
 fn parse_map(source: &str)->Vec<Vec<char>>{
     source.split('\n')
         .map(|line|
             line.chars().collect() 
+        ).collect()
+}
+
+fn parse_map_part2(source: &str)->Vec<Vec<char>>{
+    source.split('\n')
+        .map(|line|
+            line.chars()
+            .map(|c| 
+                match c {
+                    '#' => "##",
+                    'O' => "[]",
+                    '@' => "@.",
+                    '.' => "..",
+                    '\n' => "\n",
+                    _ => "",
+                }
+            ).collect::<Vec<&str>>().join("").chars().collect()
         ).collect()
 }
 
@@ -93,8 +142,8 @@ fn main() {
 ########";
 
     let moves = "<^^>>>vv<v>>v<<";
-    
     assert_eq!(2028, calculate_gps(&parse_map(&source), &moves));
+    assert_eq!(1751, calculate_gps(&parse_map_part2(&source), &moves));
 
     let source = 
 "##########
@@ -120,6 +169,7 @@ vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
 v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^";
     
     assert_eq!(10092, calculate_gps(&parse_map(&source), &moves));
+    assert_eq!(9021, calculate_gps(&parse_map_part2(&source), &moves));
     
     let source = 
 "##################################################
@@ -195,4 +245,5 @@ vvvv<vv<>>>>><>^>^<^>>>^^>^>^v^vv<>^v<vvv<<v<<<^^<>vvv<^^<^>>^<^>vv>v<^^<vv^<>v>
 v<>><^v<v<>>vvv<<^v>><<^^>^<^^>>^<^<>>v>^<<>vvv<>v^<>v^^<<^v>v^><v^^v^v<>v<><^^^<>><^><^<<v^>v<>v<v^^v<>><>^>^v<v>^<^v<v^^^<^>vv^<v>>>^v>>v>^v^><v>>v<><^vv<v>v><v<v><^v<^^^<<<<vv^><^v><^<<<<>><<>><>^vv<>v^>^<^>^<><<^>^<<<<^^v>>^<>v><<<<v><<<><^<v^vv<v<<^<>>v<>vv^^<><^vv<<<^><>^<v<><>^^<<<<v^v<<^>v^<<^<vv^^>^vv<<><<v^^>v<<v^^>>^^<<v^<<^<<<^^vv<^>vv^^><><v><<<^v<^^^<<^^^^^vv>^><>><^>^<<v<^>v^<>^>^><^<^v>^<^<>v>^^^vv^v<vv<v><v^vv>^><>vv^^<>>vv^^v<<<<vv<v^>>>><v>v<<>>>v<v>>>vv>v>^^>><^^^^v<<v>^<<<>v><vv^>^>v^^^vv^<<^v<vv<^<v<^<^><<^><<^>>^<<v^^vvv>><v^v<<^<<<<<vv^v^<vv>v<^^<>>^>^>>><>^<^<^vv^>><^^<><v^<v<^>>>>v>^<v>><v^>^^v>><vvv<<v^<^^^<v>v^<^<>^v>v><<<v<<<vv>>v<v<v>v<v^^>><<<^>v<<<^^vv><v^^>v^v^^<>><<v><<<<^v<>^<<v<>^>v>vv<><<v<<<^^v^vv^vv^v^^>^^vvvv>>>v>>>>v^<vv^<^v^v>>>v<<vv>^^>^<vvv<>v<^^<vvv<vv^<^^^>^vvv^>v<^<^v<^><^<<^<><^v<><<>^<v>^^^<^^^>><v<>^<<>^^><v><^>^v>v><>>^^<><<vv^^>>v^>><v^><^<^^vv<v>^>><^<^<v<>><^<v>v<<>>^^^v>>>><v>v>vv^^<v><<v^><v>^^>^>v<>^^<vv><><v<^vv<>^<v^>v>>^^^<^^v";
     
     assert_eq!(1446158, calculate_gps(&parse_map(&source), &moves));
+    assert_eq!(1446175, calculate_gps(&parse_map_part2(&source), &moves));
 }

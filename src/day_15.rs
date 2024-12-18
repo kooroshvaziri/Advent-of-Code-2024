@@ -12,7 +12,6 @@ fn calculate_gps(init_map: &Vec<Vec<char>>, moves: &str)->usize {
     steps.reverse();
     
     let mut pos:(i32, i32) = (0, 0); 
-    
     for j in 0..map.len() {
         for i in 0..map[j].len() {
             if map[j][i]=='@' {
@@ -21,15 +20,12 @@ fn calculate_gps(init_map: &Vec<Vec<char>>, moves: &str)->usize {
             }
         }
     };
-    
     while let Some(step) = steps.pop() {
         execute_move(&step, &pos.clone(), &mut pos, &mut map);
     }
-    
     //_print_map(&map);
     
     let mut gps_total = 0;
-    
     for j in 0..map.len(){
         for i in 0..map[j].len()-1 {
             if map[j][i]=='[' || map[j][i]=='O'  {
@@ -37,8 +33,6 @@ fn calculate_gps(init_map: &Vec<Vec<char>>, moves: &str)->usize {
             }
         }
     }
-    
-    
     gps_total
 }
 
@@ -52,7 +46,6 @@ fn _print_map(map: &Vec<Vec<char>>) {
 }
 
 fn can_move(dir: &(i32, i32), pos: &(i32, i32), map: &Vec<Vec<char>>)->bool {
-   // println!("Can Move {:?} {:?} {:?}", dir, pos, map[pos.1 as usize][pos.0 as usize]);
     if pos.0>=0 && (pos.0 as usize)<map[0].len() && pos.1>=0 && (pos.1 as usize)<map.len() {
         let tile = map[pos.1 as usize][pos.0 as usize];
         if tile=='#' {
@@ -75,7 +68,6 @@ fn can_move(dir: &(i32, i32), pos: &(i32, i32), map: &Vec<Vec<char>>)->bool {
 
 fn shift_boxes(dir: &(i32, i32), pos: &(i32, i32), map: &mut Vec<Vec<char>>) {
     let cell = (pos.0+dir.0, pos.1+dir.1);
-
     if map[cell.1 as usize][cell.0 as usize]!='.' {
         shift_boxes(dir, &cell, map);
         if dir.1!=0 {
@@ -86,7 +78,6 @@ fn shift_boxes(dir: &(i32, i32), pos: &(i32, i32), map: &mut Vec<Vec<char>>) {
             }
         }   
     }
-    
     if map[cell.1 as usize][cell.0 as usize]=='.' {
         let shift = map[cell.1 as usize][cell.0 as usize];
         map[cell.1 as usize][cell.0 as usize]=map[pos.1 as usize][pos.0 as usize];
@@ -101,7 +92,6 @@ fn execute_move(dir: &(i32, i32), pos: &(i32, i32), robot: &mut (i32, i32), map:
         robot.0 = robot.0+dir.0;
         robot.1 = robot.1+dir.1;
     }
-    
     false
 }
 
@@ -128,7 +118,6 @@ fn parse_map_part2(source: &str)->Vec<Vec<char>>{
             ).collect::<Vec<&str>>().join("").chars().collect()
         ).collect()
 }
-
 
 fn main() {
     let source = 

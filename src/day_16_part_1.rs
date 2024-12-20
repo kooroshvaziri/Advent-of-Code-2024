@@ -57,7 +57,7 @@ fn minimum_path(map: &Vec<Vec<char>>)->usize {
     let mut weight_map: HashMap<(NodeIndex, NodeIndex), i32> = HashMap::new();
     
     let end_graph_node = g.add_node(());
-    graph_uniques.insert((end_node.clone(), Direction::Rotate), g.add_node(()));
+    graph_uniques.insert((end_node.clone(), Direction::Rotate), end_graph_node);
     
     for ((parent, inlet), value) in hash {
         

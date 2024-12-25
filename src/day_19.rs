@@ -1,7 +1,6 @@
 use core::cmp::Ordering;
 use petgraph::prelude::*;
 use petgraph::Graph;
-use std::cmp;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
@@ -35,7 +34,6 @@ fn find_max_connections(pairs: &Vec<Vec<&str>>) -> String {
     let mut g = Graph::new_undirected();
     let mut lookup: HashMap<&str, NodeIndex> = HashMap::new();
     let mut rev_lookup: HashMap<NodeIndex, &str> = HashMap::new();
-    let mut all_sets: HashSet<Vec<&str>> = HashSet::new();
 
     for node in pairs {
         let left = get_node_idx(&node[0], &mut lookup, &mut g);
@@ -56,7 +54,7 @@ fn find_max_connections(pairs: &Vec<Vec<&str>>) -> String {
         let mut new_names: Vec<&str> = vec![];
         for node in set.clone() {
             let node_name = rev_lookup.get(&node).unwrap_or(&"");
-            new_names.push(node_name.clone());
+            new_names.push(node_name);
         }
         new_names.sort_by(|a, b| a.partial_cmp(b).unwrap_or(Ordering::Equal));
         if max_set.len() < new_names.len() {
@@ -3587,7 +3585,7 @@ oy-vi";
 
     assert_eq!(1467, find_boss(&parse_input(&source)));
     assert_eq!(
-        "co,de,ka,ta".to_string(),
+        "di,gs,jw,kz,md,nc,qp,rp,sa,ss,uk,xk,yn".to_string(),
         find_max_connections(&parse_input(&source))
     );
 }

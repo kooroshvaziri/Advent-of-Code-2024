@@ -8,7 +8,7 @@ fn maximize_bananas(input: &Vec<usize>) -> usize {
         .collect::<Vec<Vec<(usize, usize, i32)>>>();
 
     let mut maximus: HashMap<(i32, i32, i32, i32), usize> = HashMap::new();
-    for buy in buyers.clone() {
+    for buy in buyers {
         let mut visited: HashSet<(i32, i32, i32, i32)> = HashSet::new();
         for j in 1..1997 {
             let price = buy[j + 3].1;

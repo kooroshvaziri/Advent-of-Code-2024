@@ -6,6 +6,67 @@ use std::collections::HashSet;
 
 const DIRECTIONS: [(i32, i32); 4] = [(-1, 0), (1, 0), (0, -1), (0, 1)];
 
+fn minimum_path(score: &usize, map: &Vec<Vec<char>>) -> usize {
+    let (width, height) = (map[0].len(), map.len());
+    let mut g = Graph::new_undirected();
+
+    let (f, a) = create_graph(&map, &mut g);
+
+    //remove one wall at a time on the path... calculate a*
+    let mut cheats: HashMap<usize, usize> = HashMap::new();
+    let mut visited: HashSet<Vec<NodeIndex>> = HashSet::new();
+    let mut removed_walls: HashSet<(usize, usize)> = HashSet::new();
+
+    if let Some((cost, apath)) = astar(&g, a, |finish| finish == f, |e| *e.weight(), |_| 0.0) {
+        for p in apath.clone() {
+            let idx = p.index();
+            if let Some((x0, y0)) = convert_index_to_xy(&idx, &width, &height) {
+                for dxdy in DIRECTIONS {
+                    let (x, y) = (
+                        ((x0 as i32) + dxdy.0) as usize,
+                        ((y0 as i32) + dxdy.1) as usize,
+                    );
+                    if !removed_walls.contains(&(x, y)) && map[y][x] == '#' {
+                        //remove the wall
+                        let mut new_map = map.clone();
+                        new_map[y][x] = '.';
+
+                        update_cheats(&(cost as usize), &mut cheats, &mut visited, &new_map);
+                        removed_walls.insert((x, y));
+                    }
+                }
+            }
+        }
+    }
+
+    //println!("Cheats:{:?}\n CutOff: {:?}\n\n Removed: {:?}", cheats, score, removed_walls);
+    cheats
+        .iter()
+        .filter(|(&k, _v)| k >= *score)
+        .map(|(_k, v)| v)
+        .sum::<usize>()
+}
+
+fn update_cheats(
+    final_cost: &usize,
+    cheats: &mut HashMap<usize, usize>,
+    visited: &mut HashSet<Vec<NodeIndex>>,
+    map: &Vec<Vec<char>>,
+) -> () {
+    let mut g2 = Graph::new_undirected();
+    let (f2, a2) = create_graph(&map, &mut g2);
+    if let Some((cost, apath)) = astar(&g2, a2, |finish| finish == f2, |e| *e.weight(), |_| 0.0) {
+        if !visited.contains(&apath) {
+            let ucost = cost as usize;
+            if ucost < *final_cost {
+                let savings = *final_cost - ucost;
+                cheats.insert(savings, cheats.get(&savings).unwrap_or(&0) + 1);
+            }
+            visited.insert(apath);
+        }
+    }
+}
+
 fn create_graph(
     map: &Vec<Vec<char>>,
     g: &mut Graph<(), f32, Undirected>,
@@ -63,68 +124,6 @@ fn create_graph(
     }
 
     (end_node_graph, start_node_graph)
-}
-
-fn minimum_path(score: &usize, map: &Vec<Vec<char>>) -> usize {
-    let (width, height) = (map[0].len(), map.len());
-    let mut g = Graph::new_undirected();
-
-    let (f, a) = create_graph(&map, &mut g);
-
-    //remove one wall at a time on the path... calculate a*
-    let mut cheats: HashMap<usize, usize> = HashMap::new();
-    let mut visited: HashSet<Vec<NodeIndex>> = HashSet::new();
-    let mut removed_walls: HashSet<(usize, usize)> = HashSet::new();
-
-    if let Some((cost, apath)) = astar(&g, a, |finish| finish == f, |e| *e.weight(), |_| 0.0) {
-        for p in apath.clone() {
-            let idx = p.index();
-            if let Some((x0, y0)) = convert_index_to_xy(&idx, &width, &height) {
-                for dxdy in DIRECTIONS {
-                    let (x, y) = (
-                        ((x0 as i32) + dxdy.0) as usize,
-                        ((y0 as i32) + dxdy.1) as usize,
-                    );
-                    if !removed_walls.contains(&(x, y)) && map[y][x] == '#' {
-                        //remove the wall
-                        let mut new_map = map.clone();
-                        new_map[y][x] = '.';
-
-                        update_cheats(&(cost as usize), &mut cheats, &mut visited, &new_map);
-                        removed_walls.insert((x, y));
-                    }
-                }
-            }
-        }
-    }
-
-    //println!("Cheats:{:?}\n CutOff: {:?}\n\n Removed: {:?}", cheats, score, removed_walls);
-
-    cheats
-        .iter()
-        .filter(|(&k, _v)| k >= *score)
-        .map(|(_k, v)| v)
-        .sum::<usize>()
-}
-
-fn update_cheats(
-    final_cost: &usize,
-    cheats: &mut HashMap<usize, usize>,
-    visited: &mut HashSet<Vec<NodeIndex>>,
-    map: &Vec<Vec<char>>,
-) -> () {
-    let mut g2 = Graph::new_undirected();
-    let (f2, a2) = create_graph(&map, &mut g2);
-    if let Some((cost, apath)) = astar(&g2, a2, |finish| finish == f2, |e| *e.weight(), |_| 0.0) {
-        if !visited.contains(&apath) {
-            let ucost = cost as usize;
-            if ucost < *final_cost {
-                let savings = *final_cost - ucost;
-                cheats.insert(savings, cheats.get(&savings).unwrap_or(&0) + 1);
-            }
-            visited.insert(apath);
-        }
-    }
 }
 
 fn convert_index_to_xy(index: &usize, width: &usize, height: &usize) -> Option<(usize, usize)> {

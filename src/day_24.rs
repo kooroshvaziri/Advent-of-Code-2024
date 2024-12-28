@@ -35,7 +35,7 @@ fn part_2(source: &str) -> String {
      y_id-1 AND x_id-1 (7)       ppp_id-1 AND qqq_id-1 (8)
 
 
-        Attention: below code does not handle Z00 and Z45 edge cases. 
+        Attention: below code is not exhaustive. Handle Z00 and Z45 edge cases if required by other puzzles inputs:
             if Z00 is not equal to X00 XOR Y00, the associated wire needs to be swapped with Z00.
             if Z45 is not equal to (rrr as X44 AND Y44) OR (sss of prev terms) they should be handled as well.
     */

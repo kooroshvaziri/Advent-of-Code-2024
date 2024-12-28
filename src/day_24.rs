@@ -35,7 +35,7 @@ fn part_2(source: &str) -> String {
      y_id-1 AND x_id-1 (7)       ppp_id-1 AND qqq_id-1 (8)
 
 
-        Attention: below code is not exhaustive. Handle Z00 and Z45 edge cases if required by other puzzles inputs:
+        Attention: below code is not exhaustive. Handle Z00 and Z45 edge cases if required by other puzzles' inputs:
             if Z00 is not equal to X00 XOR Y00, the associated wire needs to be swapped with Z00.
             if Z45 is not equal to (rrr as X44 AND Y44) OR (sss of prev terms) they should be handled as well.
     */
@@ -65,7 +65,7 @@ fn part_2(source: &str) -> String {
         let x = "x".to_string() + format!("{:0>2}", id).as_str();
         let y = "y".to_string() + format!("{:0>2}", id).as_str();
 
-        let (rand_ppp, op_12, rand_qqq) = get_wire_assoc(&z, &codes);
+        let (rand_ppp, op_23, rand_qqq) = get_wire_assoc(&z, &codes);
         let (temp_c41, _op_t, temp_c42) = get_wire_assoc(&rand_qqq, &codes);
         //get ppp and qqq in correct order...
         let (_ppp, qqq) = if temp_c41 == x || temp_c42 == x {
@@ -76,21 +76,21 @@ fn part_2(source: &str) -> String {
 
         if let Some(exp_qqq) = find_wire(&x, &y, &codes) {
             if exp_qqq != qqq {
-                if op_12 == "XOR" {
+                if op_23 == "XOR" {
                     swapped_wires.push(exp_qqq.to_string());
                     swapped_wires.push(qqq.to_string());
                 } else {
                     swapped_wires.push(z);
-                    //find expected of the term (1) and (2)
+                    //find expected of the term (2) and (3)
                     for (key, (left, op, right)) in codes.clone() {
                         if op == "XOR" && (left == exp_qqq || right == exp_qqq) {
                             swapped_wires.push(key.to_string());
                         }
                     }
                 }
-            } else if op_12 != "XOR" {
+            } else if op_23 != "XOR" {
                 swapped_wires.push(z.clone());
-                //find expected of the term (1) and (2)
+                //find expected of the term (2) and (3)
                 for (key, (left, op, right)) in codes.clone() {
                     if op == "XOR" && (left == exp_qqq || right == exp_qqq) {
                         swapped_wires.push(key.to_string());

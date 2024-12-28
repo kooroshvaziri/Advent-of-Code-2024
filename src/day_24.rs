@@ -32,7 +32,7 @@ fn part_2(source: &str) -> String {
                            |                                 y_id XOR y_id (4)
             rrr (5)        OR             sss (6)
              |                             |
-     y_id-1 XOR x_id-1 (7)       ppp_id-1 AND qqq_id-1 (8)
+     y_id-1 AND x_id-1 (7)       ppp_id-1 AND qqq_id-1 (8)
 
     */
 

@@ -2,7 +2,7 @@
 
 # Advent of Code 2024
 
-Here, ypu will find my solutions to the daily puzzles from [AoC 10-Year Anniversary](https://adventofcode.com/2024).
+Here, you will find my solutions to the daily puzzles from the [AoC 10-Year Anniversary](https://adventofcode.com/2024).
 
 ## Source Codes
 

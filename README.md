@@ -6,7 +6,7 @@ My solutions to the daily puzzles from [AoC 10-Year Anniversary](https://advento
 
 ## Source Codes
 
-All the source code is written in Rust using the online Rust Playground tool.
+All the source code is written in Rust using the online [Rust Playground](https://play.rust-lang.org) tool.
 
 Final source codes of the daily puzzles are named with their day in the filename, i.e. [day_20.rs](https://github.com/kooroshvaziri/Advent-of-Code-2024/blob/main/src/day_20.rs).
 
@@ -15,6 +15,4 @@ I also uploaded some of my original solutions to the puzzles with filenames endi
 
 ## How to Run
 
-All the source code is written in Rust using the online [Rust Playground](https://play.rust-lang.org) tool.
-
-Just copy and paste any code from the [source folder](https://github.com/kooroshvaziri/Advent-of-Code-2024/blob/main/src/) there, and they should work.
+Just copy and paste any code from the [source folder](https://github.com/kooroshvaziri/Advent-of-Code-2024/blob/main/src/) into [Rust Playground](https://play.rust-lang.org), and they should work.

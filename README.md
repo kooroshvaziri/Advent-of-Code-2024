@@ -1,6 +1,8 @@
+![AoC 2024](Advent_of_Code_2024.png)
+
 # Advent of Code 2024
 
-My solutions to the daily puzzles from [AoC 10-Year Anniversary](https://adventofcode.com/2024). 
+My solutions to the daily puzzles from [AoC 10-Year Anniversary](https://adventofcode.com/2024).
 
 ## Source Codes
 
@@ -16,4 +18,3 @@ I also uploaded some of my original solutions to the puzzles with filenames endi
 All the source code is written in Rust using the online [Rust Playground](https://play.rust-lang.org) tool.
 
 Just copy and paste any code from the [source folder](https://github.com/kooroshvaziri/Advent-of-Code-2024/blob/main/src/) there, and they should work.
-

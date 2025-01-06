@@ -64,8 +64,6 @@ fn parse_input(source: &str) -> (HashSet<Vec<usize>>, HashSet<Vec<usize>>) {
         }
     }
 
-    //println!("Keys: {:?} \n Locks: {:?}", keys, locks);
-
     (locks, keys)
 }
 
